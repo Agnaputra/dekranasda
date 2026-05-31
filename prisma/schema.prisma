@@ -1,0 +1,41 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+model Product {
+  id              Int          @id @default(autoincrement())
+  barcode         String       @unique
+  name            String
+  unit            String       @default("pcs")
+  basePrice       Float
+  sellingPrice    Float
+  initialStock    Int          @default(0)
+  additionalStock Int          @default(0)
+  currentStock    Int
+  sales           SalesDaily[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("products")
+}
+
+model SalesDaily {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantitySold Int
+  totalPayment Float
+  profit       Float
+  date         DateTime @default(now())
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sales_daily")
+}
